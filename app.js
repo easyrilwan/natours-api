@@ -6,6 +6,16 @@ const port = 3000;
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log('Hello from the middleware 👋');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 // app.get('/', (req, res) => {
 //   res
 //     .status(200)
@@ -21,8 +31,11 @@ const tours = JSON.parse(
 );
 
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
+
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     results: tours.length,
     data: {
       tours,
@@ -53,7 +66,7 @@ const getTour = (req, res) => {
 };
 
 const createTour = (req, res) => {
-  // console.log(req.body);
+  // console.log(req.body); // For Route :id
 
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
